@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gachapon Acak Kelompok Modern</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Inter & Font Pixel/Game -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        fredoka: ['"Fredoka One"', 'cursive'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at center, #1e1b4b 0%, #0f172a 100%);
+            min-height: 100vh;
+        }
+
+        /* Animation Keyframes */
+        @keyframes shake {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-8px, 4px) rotate(-4deg); }
+            40% { transform: translate(8px, -4px) rotate(4deg); }
+            60% { transform: translate(-6px, -2px) rotate(-2deg); }
+            80% { transform: translate(6px, 2px) rotate(2deg); }
+        }
+
+        @keyframes spinCrank {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes dropCapsule {
+            0% { transform: translateY(-100px) scale(0.5); opacity: 0; }
+            60% { transform: translateY(20px) scale(1.1); opacity: 1; }
+            80% { transform: translateY(-5px) scale(0.95); }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        @keyframes popOpen {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes rgbCycle {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        .animate-shake {
+            animation: shake 0.5s ease-in-out infinite;
+        }
+
+        .animate-crank {
+            animation: spinCrank 0.8s linear;
+        }
+
+        .animate-drop {
+            animation: dropCapsule 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .animate-pop {
+            animation: popOpen 0.4s ease-out forwards;
+        }
+
+        .rainbow-mode {
+            animation: rgbCycle 8s linear infinite;
+        }
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="text-white p-4 md:p-8 flex flex-col justify-between min-h-screen">
+
+    <!-- Header Section -->
+    <header class="text-center max-w-4xl mx-auto mb-6">
+        <h1 class="font-fredoka text-4xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-500 to-yellow-300 drop-shadow-[0_4px_10px_rgba(0,0,0,0.5)] tracking-wide mb-2">
+            <i class="fa-solid fa-dice-d20 mr-3 text-cyan-400 animate-bounce"></i>X TKJ ONE
+        </h1>
+        <p class="text-slate-300 text-sm md:text-base font-semibold">
+            SMK PASUNDAN 1 KOTA SERANG
+        </p>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-start my-auto">
+        
+        <!-- Left Column: Gachapon Machine & Color Controls -->
+        <div class="lg:col-span-5 flex flex-col items-center">
+            
+            <!-- Machine Color & Voice Switcher Panel -->
+            <div class="w-full max-w-md bg-slate-900/80 backdrop-blur-md p-3.5 rounded-2xl border border-white/10 mb-4 flex flex-col gap-3">
+                
+                <!-- Color Controls Header -->
+                <div class="flex items-center justify-between px-2">
+                    <span class="text-xs font-bold text-slate-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-palette text-pink-400"></i> TEMA MESIN
+                    </span>
+                    <button id="rgbToggleBtn" onclick="toggleRGBMode()" class="text-xs px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 border border-white/20 text-cyan-300 transition flex items-center gap-1">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Auto RGB: <span id="rgbStatusText">OFF</span>
+                    </button>
+                </div>
+                
+                <!-- Color Palette Selectors -->
+                <div class="flex items-center justify-between gap-1 px-1">
+                    <button onclick="setMachineTheme('purple')" title="Cyber Purple" class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-700 border-2 border-white/40 hover:scale-110 transition shadow-lg"></button>
+                    <button onclick="setMachineTheme('pink')" title="Neon Pink" class="w-8 h-8 rounded-xl bg-gradient-to-br from-pink-500 to-rose-700 border-2 border-white/40 hover:scale-110 transition shadow-lg"></button>
+                    <button onclick="setMachineTheme('blue')" title="Electric Blue" class="w-8 h-8 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-700 border-2 border-white/40 hover:scale-110 transition shadow-lg"></button>
+                    <button onclick="setMachineTheme('green')" title="Emerald Green" class="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-700 border-2 border-white/40 hover:scale-110 transition shadow-lg"></button>
+                    <button onclick="setMachineTheme('orange')" title="Sunset Orange" class="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-orange-600 border-2 border-white/40 hover:scale-110 transition shadow-lg"></button>
+                    <button onclick="setMachineTheme('gold')" title="Gold Lux" class="w-8 h-8 rounded-xl bg-gradient-to-br from-yellow-300 to-amber-600 border-2 border-white/40 hover:scale-110 transition shadow-lg"></button>
+                </div>
+
+                <!-- NEW: Voice Character Selector -->
+                <div class="pt-2 border-t border-white/10">
+                    <div class="text-xs font-bold text-slate-400 mb-2 px-1 flex items-center justify-between">
+                        <span class="flex items-center gap-1.5 text-cyan-300">
+                            <i class="fa-solid fa-volume-high"></i> PILIH SUARA TOKOH
+                        </span>
+                        <span id="activeVoiceBadge" class="text-[10px] bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded-full border border-cyan-500/30">Default SFX</span>
+                    </div>
+                    <div class="grid grid-cols-4 gap-1.5">
+                        <button onclick="setVoiceMode('default')" id="voiceBtn-default" class="voice-btn py-1.5 px-1 rounded-xl text-xs font-semibold bg-cyan-500/30 text-cyan-300 border border-cyan-400 flex flex-col items-center gap-1 transition">
+                            <i class="fa-solid fa-robot"></i> SFX
+                        </button>
+                        <button onclick="setVoiceMode('jokowi')" id="voiceBtn-jokowi" class="voice-btn py-1.5 px-1 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 border border-white/10 hover:bg-slate-700 flex flex-col items-center gap-1 transition">
+                            <i class="fa-solid fa-user-tie"></i> Pak Jokowi
+                        </button>
+                        <button onclick="setVoiceMode('prabowo')" id="voiceBtn-prabowo" class="voice-btn py-1.5 px-1 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 border border-white/10 hover:bg-slate-700 flex flex-col items-center gap-1 transition">
+                            <i class="fa-solid fa-person-military-pointing"></i> Pak Prabowo
+                        </button>
+                        <button onclick="setVoiceMode('anies')" id="voiceBtn-anies" class="voice-btn py-1.5 px-1 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 border border-white/10 hover:bg-slate-700 flex flex-col items-center gap-1 transition">
+                            <i class="fa-solid fa-user-graduate"></i> Pak Anies
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Gachapon Machine Outer -->
+            <div id="gachaMachine" class="relative w-full max-w-md bg-gradient-to-b from-indigo-600 via-purple-700 to-slate-900 rounded-t-[120px] rounded-b-[40px] p-6 shadow-[0_0_50px_rgba(99,102,241,0.3)] border-4 border-white/20 transition-all duration-700">
+                
+                <!-- Glass Globe Dome (Contains Balls) -->
+                <div id="gachaGlobe" class="relative w-64 h-64 mx-auto bg-gradient-to-b from-cyan-200/20 via-white/10 to-transparent rounded-full border-4 border-white/40 shadow-[inset_0_0_30px_rgba(255,255,255,0.2)] overflow-hidden backdrop-blur-md flex items-center justify-center">
+                    
+                    <!-- Futuristic Shiny Glass Reflection -->
+                    <div class="absolute top-4 left-8 w-20 h-10 bg-gradient-to-b from-white/40 to-transparent rounded-full transform -rotate-45 blur-[1px] pointer-events-none"></div>
+                    
+                    <!-- Floating Capsules inside machine -->
+                    <div id="ballContainer" class="relative w-full h-full p-4 flex flex-wrap justify-center items-end gap-1">
+                        <!-- Dynamic Balls populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Machine Middle / Coin & Crank Zone -->
+                <div class="mt-5 bg-slate-900/90 rounded-2xl p-4 border border-white/10 flex flex-col items-center shadow-inner backdrop-blur-md">
+                    <!-- Title Badge -->
+                    <div class="bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-fredoka px-5 py-1 rounded-full text-xs font-bold tracking-wider shadow-lg mb-4 border border-cyan-200">
+                        MUTAR GACHA!
+                    </div>
+
+                    <!-- Modern Crank Dial -->
+                    <div class="relative flex items-center justify-center my-2">
+                        <button id="crankBtn" onclick="drawGacha()" class="w-24 h-24 bg-slate-800 hover:bg-slate-700 rounded-full border-4 border-cyan-400/60 shadow-[0_0_20px_rgba(34,211,238,0.4)] active:scale-95 transition-all flex items-center justify-center group cursor-pointer focus:outline-none">
+                            <div id="crankHandle" class="w-16 h-5 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-between px-1.5 shadow-md group-hover:from-pink-400 group-hover:to-purple-500 transition-colors">
+                                <div class="w-3 h-3 bg-cyan-300 rounded-full shadow-[0_0_8px_#22d3ee]"></div>
+                                <div class="w-3 h-3 bg-cyan-300 rounded-full shadow-[0_0_8px_#22d3ee]"></div>
+                            </div>
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-2 font-semibold">Klik Tuas Neon di Atas</p>
+                </div>
+
+                <!-- Prize Chute (Dispensary Slot) -->
+                <div class="mt-4 bg-slate-950 rounded-2xl h-20 border-2 border-white/10 relative flex items-center justify-center overflow-hidden shadow-inner">
+                    <div class="absolute inset-x-0 top-0 h-2 bg-black/60"></div>
+                    <!-- Dispensed Capsule Zone -->
+                    <div id="chuteSlot" class="flex items-center justify-center h-full">
+                        <span class="text-xs text-slate-500 italic">Kapsul akan keluar di sini...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Controls -->
+            <div class="w-full max-w-md mt-6 flex flex-col gap-3">
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="drawGacha()" id="singleDrawBtn" class="bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-slate-950 font-fredoka text-lg py-3 px-4 rounded-xl shadow-[0_4px_20px_rgba(245,158,11,0.3)] active:translate-y-0.5 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-rotate"></i> Putar 1x
+                    </button>
+                    <button onclick="autoGacha()" id="autoDrawBtn" class="bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-slate-950 font-fredoka text-lg py-3 px-4 rounded-xl shadow-[0_4px_20px_rgba(16,185,129,0.3)] active:translate-y-0.5 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-bolt"></i> Auto Putar All
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="openResetModal()" class="bg-slate-800 hover:bg-slate-700 text-rose-300 font-bold py-2.5 px-4 rounded-xl border border-rose-500/30 transition text-sm flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+                        <i class="fa-solid fa-arrows-rotate"></i> Reset Semuanya
+                    </button>
+                    <button onclick="copyResults()" id="copyBtn" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold py-2.5 px-4 rounded-xl border border-cyan-500/30 transition text-sm flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+                        <i class="fa-solid fa-copy"></i> Salin Hasil
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Column: Student List & Group Results -->
+        <div class="lg:col-span-7 flex flex-col gap-6">
+
+            <!-- Stats Bar -->
+            <div class="glass-panel p-4 rounded-2xl flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center justify-center font-bold text-xl shadow">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400 font-semibold">Total Siswa</div>
+                        <div class="text-lg font-bold" id="totalStudentsCount">36 Siswa</div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center justify-center font-bold text-xl shadow">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400 font-semibold">Siswa Belum Diundi</div>
+                        <div class="text-lg font-bold text-amber-300" id="remainingCount">36</div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center justify-center font-bold text-xl shadow">
+                        <i class="fa-solid fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400 font-semibold">Kelompok Terisi</div>
+                        <div class="text-lg font-bold text-emerald-400" id="filledGroupsCount">0 / 6</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs Navigation -->
+            <div class="flex border-b border-white/10">
+                <button onclick="switchTab('groups')" id="tabGroups" class="py-2.5 px-6 font-fredoka text-lg border-b-2 border-cyan-400 text-cyan-300 transition">
+                    <i class="fa-solid fa-boxes-packing mr-2"></i> Hasil Kelompok (6)
+                </button>
+                <button onclick="switchTab('students')" id="tabStudents" class="py-2.5 px-6 font-fredoka text-lg border-b-2 border-transparent text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-list-ol mr-2"></i> Daftar Master Siswa
+                </button>
+            </div>
+
+            <!-- Tab Content 1: Groups Cards Grid -->
+            <div id="contentGroups" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- 6 Group Cards generated by JS -->
+            </div>
+
+            <!-- Tab Content 2: Master Student List (Hidden by default) -->
+            <div id="contentStudents" class="hidden glass-panel p-5 rounded-2xl max-h-[500px] overflow-y-auto">
+                <h3 class="font-fredoka text-xl text-cyan-300 mb-4 flex items-center justify-between">
+                    <span>Daftar Siswa (36)</span>
+                    <span class="text-xs font-sans text-slate-400 font-normal">Status Undian</span>
+                </h3>
+                <div id="masterStudentList" class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal Popup Winner Capsule Reveal -->
+    <div id="resultModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-slate-900 border border-white/20 rounded-3xl p-6 md:p-8 max-w-sm w-full text-center shadow-2xl relative animate-pop">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Capsule Icon Graphic -->
+            <div id="modalCapsuleGraphic" class="w-24 h-24 mx-auto mb-4 rounded-full border-4 border-white flex items-center justify-center text-4xl shadow-2xl transition-transform duration-500">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+
+            <div class="text-cyan-400 text-xs font-bold tracking-widest uppercase mb-1" id="modalGroupTag">MASUK KELOMPOK 1</div>
+            <h2 class="font-fredoka text-2xl md:text-3xl text-white mb-2" id="modalStudentName">Nama Siswa</h2>
+            <p class="text-slate-400 text-sm mb-6" id="modalDesc">Selamat! Kamu terpilih secara acak.</p>
+
+            <button onclick="closeModal()" class="w-full bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-fredoka py-3 rounded-xl shadow-lg transition">
+                Lanjutkan Gacha <i class="fa-solid fa-arrow-right ml-1"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Custom Modal Confirmation For Reset -->
+    <div id="resetConfirmModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-slate-900 border border-rose-500/30 rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl relative animate-pop">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-rose-500/20 text-rose-400 border border-rose-500/40 flex items-center justify-center text-3xl shadow-lg">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="font-fredoka text-2xl text-white mb-2">Reset Semuanya?</h3>
+            <p class="text-slate-300 text-xs mb-6 leading-relaxed">
+                Seluruh data kocokan kelompok akan dikembalikan ke awal dan 36 siswa akan dikocok ulang.
+            </p>
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="closeResetModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-xl border border-white/10 text-sm transition">
+                    Batal
+                </button>
+                <button onclick="confirmResetGacha()" class="w-full bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-400 hover:to-red-500 text-white font-bold py-2.5 rounded-xl shadow-lg text-sm transition">
+                    Ya, Reset!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl border border-cyan-400/30 shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3 z-50">
+        <i class="fa-solid fa-circle-info text-cyan-400 text-lg"></i>
+        <span id="toastMessage">Pesan Notifikasi</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-8 text-center text-xs text-slate-500">
+        &copy; 2026 Website Gachapon Kelompok Modern &bull; DI BUAT OLEH FRIZYY
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // List of 36 Students provided by User
+        const originalStudents = [
+            "Ahmadul Baydowi", "Andini Fitriani", "Arya Suyatna", "Bara Adyla",
+            "Bayu Saputra", "Cahya Nurohman", "Dhefa Saputra", "Diah Asifah",
+            "Dias Rahman", "Dzaky Maulana", "Eka Putra Alamasah", "Fiqri Dinsyah Ramadhan",
+            "Firas Saputra", "Hafi Saputra", "Halimatis Syadiah", "Hamdan",
+            "Ibnu Anvary", "Kevin Azhar", "Laode Jumaid Dil Awal", "Lutfya Maliha",
+            "Miftahurrohman", "Moh Fikri", "Muhamad Fawwaz", "Muhamad Isa",
+            "Muhamad Prasetyo", "Muhamad Raditya", "Muhamad Zaki", "Muhamad Fadlan",
+            "Nahrifa Arkha", "Rafa Ramadan", "Raihan Ahmad Yusuf", "Rizki Maulana",
+            "Taskia", "Wilda Rahayu", "Wiradani", "Zulkifli"
+        ];
+
+        // Theme colors for groups & capsules
+        const groupColors = [
+            { bg: 'bg-red-500', border: 'border-red-400', text: 'text-red-400', hex: '#FF4B4B', name: 'Kelompok 1 (Merah)' },
+            { bg: 'bg-blue-500', border: 'border-blue-400', text: 'text-blue-400', hex: '#1CB0F6', name: 'Kelompok 2 (Biru)' },
+            { bg: 'bg-emerald-500', border: 'border-emerald-400', text: 'text-emerald-400', hex: '#10B981', name: 'Kelompok 3 (Hijau)' },
+            { bg: 'bg-amber-500', border: 'border-amber-400', text: 'text-amber-400', hex: '#F59E0B', name: 'Kelompok 4 (Kuning)' },
+            { bg: 'bg-purple-500', border: 'border-purple-400', text: 'text-purple-400', hex: '#8B5CF6', name: 'Kelompok 5 (Ungu)' },
+            { bg: 'bg-pink-500', border: 'border-pink-400', text: 'text-pink-400', hex: '#EC4899', name: 'Kelompok 6 (Pink)' },
+        ];
+
+        // Machine Color Themes Preset
+        const machineThemes = {
+            purple: {
+                gradient: 'from-indigo-600 via-purple-700 to-slate-900',
+                shadow: 'shadow-[0_0_50px_rgba(99,102,241,0.4)]'
+            },
+            pink: {
+                gradient: 'from-pink-600 via-rose-700 to-slate-900',
+                shadow: 'shadow-[0_0_50px_rgba(236,72,153,0.4)]'
+            },
+            blue: {
+                gradient: 'from-cyan-600 via-blue-700 to-slate-900',
+                shadow: 'shadow-[0_0_50px_rgba(6,182,212,0.4)]'
+            },
+            green: {
+                gradient: 'from-emerald-500 via-teal-700 to-slate-900',
+                shadow: 'shadow-[0_0_50px_rgba(16,185,129,0.4)]'
+            },
+            orange: {
+                gradient: 'from-amber-500 via-orange-600 to-slate-900',
+                shadow: 'shadow-[0_0_50px_rgba(245,158,11,0.4)]'
+            },
+            gold: {
+                gradient: 'from-yellow-400 via-amber-600 to-slate-900',
+                shadow: 'shadow-[0_0_50px_rgba(250,204,21,0.4)]'
+            }
+        };
+
+        // State Variables
+        let pool = [];
+        let groups = [[], [], [], [], [], []];
+        let isSpinning = false;
+        let isAutoLoop = false;
+        let isRGBMode = false;
+        let selectedVoiceMode = 'default'; // 'default', 'jokowi', 'prabowo', 'anies'
+
+        // Sound Synthesis & Voice Speech Engine
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function setVoiceMode(mode) {
+            selectedVoiceMode = mode;
+            
+            // Update UI buttons styling
+            const modes = ['default', 'jokowi', 'prabowo', 'anies'];
+            const names = { default: 'Default SFX', jokowi: 'Pak Jokowi', prabowo: 'Pak Prabowo', anies: 'Pak Anies' };
+
+            modes.forEach(m => {
+                const btn = document.getElementById(`voiceBtn-${m}`);
+                if (m === mode) {
+                    btn.className = "voice-btn py-1.5 px-1 rounded-xl text-xs font-semibold bg-cyan-500/30 text-cyan-300 border border-cyan-400 flex flex-col items-center gap-1 transition shadow-md";
+                } else {
+                    btn.className = "voice-btn py-1.5 px-1 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 border border-white/10 hover:bg-slate-700 flex flex-col items-center gap-1 transition";
+                }
+            });
+
+            document.getElementById('activeVoiceBadge').innerText = names[mode];
+            showToast(`🎙️ Suara diubah ke: ${names[mode]}`);
+            
+            // Test voice sample
+            speakCharacterPhrase('test');
+        }
+
+        function speakCharacterPhrase(type, studentName = '', groupNum = 1) {
+            if (selectedVoiceMode === 'default') {
+                if (type === 'test') playSound('pop');
+                return;
+            }
+
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Stop active speech
+
+                let text = '';
+                let pitch = 1.0;
+                let rate = 0.95;
+
+                if (selectedVoiceMode === 'jokowi') {
+                    pitch = 0.85;
+                    rate = 0.88;
+                    if (type === 'spin') {
+                        const spinPhrases = ["Ya kita putar dulu ya.", "Kerja, kerja, kerja, gacha dulu.", "Ayo diacak dulu ya."];
+                        text = spinPhrases[Math.floor(Math.random() * spinPhrases.length)];
+                    } else if (type === 'win') {
+                        text = `Ya, selamat untuk ${studentName}, masuk ke kelompok ${groupNum} ya. Mantap!`;
+                    } else if (type === 'test') {
+                        text = "Ya, suara Pak Jokowi aktif ya.";
+                    }
+                } else if (selectedVoiceMode === 'prabowo') {
+                    pitch = 0.7;
+                    rate = 1.05;
+                    if (type === 'spin') {
+                        const spinPhrases = ["Mari kita kumpulkan pasukan!", "Siap diacak, siap kerja keras!", "Maju terus gachanya!"];
+                        text = spinPhrases[Math.floor(Math.random() * spinPhrases.length)];
+                    } else if (type === 'win') {
+                        text = `Selamat saudara ${studentName}! Anda resmi bergabung di Kelompok ${groupNum}! Merdeka!`;
+                    } else if (type === 'test') {
+                        text = "Siap! Suara Pak Prabowo sudah siap!";
+                    }
+                } else if (selectedVoiceMode === 'anies') {
+                    pitch = 1.1;
+                    rate = 0.9;
+                    if (type === 'spin') {
+                        const spinPhrases = ["Mari kita hadirkan keadilan dalam kelompok.", "Proses pengacakan sedang berjalan.", "Kita ikhtiarkan bersama ya."];
+                        text = spinPhrases[Math.floor(Math.random() * spinPhrases.length)];
+                    } else if (type === 'win') {
+                        text = `Gagasan luar biasa! Saudara ${studentName} resmi hadir di Kelompok ${groupNum}. Selamat berkarya!`;
+                    } else if (type === 'test') {
+                        text = "Gagasan yang baik! Suara Pak Anies aktif.";
+                    }
+                }
+
+                if (text) {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'id-ID';
+                    utterance.pitch = pitch;
+                    utterance.rate = rate;
+                    window.speechSynthesis.speak(utterance);
+                }
+            }
+        }
+
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'spin') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.exponentialRampToValueAtTime(600, now + 0.3);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (type === 'win') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(440, now);
+                osc.frequency.setValueAtTime(554.37, now + 0.1);
+                osc.frequency.setValueAtTime(659.25, now + 0.2);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.5);
+                osc.start(now);
+                osc.stop(now + 0.5);
+            } else if (type === 'pop') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(80, now + 0.15);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
+                osc.start(now);
+                osc.stop(now + 0.15);
+            }
+        }
+
+        // Change Machine Color Theme Manually
+        function setMachineTheme(themeKey) {
+            if (isRGBMode) toggleRGBMode(); // Turn off RGB if manually picking
+            const machine = document.getElementById('gachaMachine');
+            const theme = machineThemes[themeKey];
+
+            // Reset background gradient & shadow
+            machine.className = `relative w-full max-w-md bg-gradient-to-b ${theme.gradient} rounded-t-[120px] rounded-b-[40px] p-6 ${theme.shadow} border-4 border-white/20 transition-all duration-700`;
+        }
+
+        // Toggle RGB Rainbow Auto Cycling
+        function toggleRGBMode() {
+            isRGBMode = !isRGBMode;
+            const machine = document.getElementById('gachaMachine');
+            const statusText = document.getElementById('rgbStatusText');
+            const btn = document.getElementById('rgbToggleBtn');
+
+            if (isRGBMode) {
+                machine.classList.add('rainbow-mode');
+                statusText.innerText = "ON";
+                btn.classList.add('bg-cyan-500/30', 'border-cyan-400');
+                showToast("🌈 Auto Rainbow Mode Aktif!");
+            } else {
+                machine.classList.remove('rainbow-mode');
+                statusText.innerText = "OFF";
+                btn.classList.remove('bg-cyan-500/30', 'border-cyan-400');
+            }
+        }
+
+        // Initialize App
+        function init() {
+            pool = [...originalStudents];
+            groups = [[], [], [], [], [], []];
+            renderMasterList();
+            renderGroups();
+            renderGlobeBalls();
+            updateStats();
+            document.getElementById('chuteSlot').innerHTML = `<span class="text-xs text-slate-500 italic">Kapsul akan keluar di sini...</span>`;
+        }
+
+        // Render Balls inside Globe
+        function renderGlobeBalls() {
+            const container = document.getElementById('ballContainer');
+            container.innerHTML = '';
+            
+            const count = Math.min(pool.length, 24);
+            for (let i = 0; i < count; i++) {
+                const colorObj = groupColors[i % groupColors.length];
+                const ball = document.createElement('div');
+                ball.className = `w-7 h-7 rounded-full shadow-lg border border-white/60 flex items-center justify-center transform transition-all duration-300`;
+                ball.style.backgroundColor = colorObj.hex;
+                ball.style.transform = `rotate(${Math.floor(Math.random() * 360)}deg)`;
+                ball.innerHTML = `<div class="w-full h-1/2 bg-white/40 rounded-t-full"></div>`;
+                container.appendChild(ball);
+            }
+        }
+
+        // Render Master Student List
+        function renderMasterList() {
+            const listEl = document.getElementById('masterStudentList');
+            listEl.innerHTML = '';
+
+            originalStudents.forEach((student, index) => {
+                let assignedGroupIndex = -1;
+                groups.forEach((g, gIdx) => {
+                    if (g.includes(student)) assignedGroupIndex = gIdx;
+                });
+
+                const isDone = assignedGroupIndex !== -1;
+
+                const item = document.createElement('div');
+                item.className = `p-2.5 rounded-xl border flex items-center justify-between text-sm transition-all ${
+                    isDone 
+                    ? 'bg-slate-900/40 border-white/5 text-slate-500 line-through' 
+                    : 'bg-white/10 border-white/15 text-white font-semibold'
+                }`;
+
+                item.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-slate-950/40 text-xs flex items-center justify-center font-bold text-slate-300">${index + 1}</span>
+                        <span>${student}</span>
+                    </div>
+                    ${isDone 
+                        ? `<span class="text-xs px-2.5 py-0.5 rounded-full ${groupColors[assignedGroupIndex].bg} text-white font-sans no-underline font-bold">K${assignedGroupIndex + 1}</span>`
+                        : `<span class="text-xs text-amber-300 font-sans"><i class="fa-solid fa-clock"></i> Belum</span>`
+                    }
+                `;
+                listEl.appendChild(item);
+            });
+        }
+
+        // Render 6 Group Cards
+        function renderGroups() {
+            const container = document.getElementById('contentGroups');
+            container.innerHTML = '';
+
+            for (let i = 0; i < 6; i++) {
+                const color = groupColors[i];
+                const members = groups[i];
+                const maxMembers = 6;
+                const isFull = members.length === maxMembers;
+
+                const card = document.createElement('div');
+                card.className = `glass-panel rounded-2xl p-4 flex flex-col justify-between border-t-4 ${color.border} relative overflow-hidden transition-all duration-300`;
+
+                let membersListHTML = '';
+                for (let m = 0; m < maxMembers; m++) {
+                    if (members[m]) {
+                        membersListHTML += `
+                            <li class="py-1.5 px-3 bg-slate-900/60 rounded-lg text-sm font-semibold flex items-center gap-2 text-white border border-white/5 animate-pop">
+                                <span class="w-5 h-5 rounded-full bg-white/10 text-xs flex items-center justify-center font-bold text-slate-300">${m + 1}</span>
+                                <span class="truncate">${members[m]}</span>
+                            </li>
+                        `;
+                    } else {
+                        membersListHTML += `
+                            <li class="py-1.5 px-3 bg-white/5 border border-dashed border-white/10 rounded-lg text-xs text-slate-500 italic flex items-center gap-2">
+                                <span class="w-5 h-5 rounded-full bg-white/5 text-xs flex items-center justify-center font-normal">${m + 1}</span>
+                                <span>[ Kosong ]</span>
+                            </li>
+                        `;
+                    }
+                }
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="font-fredoka text-lg ${color.text} flex items-center gap-2">
+                                <i class="fa-solid fa-users-rectangle"></i> Kelompok ${i + 1}
+                            </h4>
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-full ${isFull ? 'bg-emerald-500 text-slate-950 font-bold' : 'bg-white/10 text-slate-300'}">
+                                ${members.length} / ${maxMembers}
+                            </span>
+                        </div>
+                        <ul class="space-y-1.5">
+                            ${membersListHTML}
+                        </ul>
+                    </div>
+                `;
+                container.appendChild(card);
+            }
+        }
+
+        // Update Counter Stats
+        function updateStats() {
+            document.getElementById('remainingCount').innerText = pool.length;
+            
+            let filledCount = 0;
+            groups.forEach(g => {
+                if (g.length === 6) filledCount++;
+            });
+            document.getElementById('filledGroupsCount').innerText = `${filledCount} / 6`;
+        }
+
+        // Target Group Determination (RNG)
+        function getAvailableGroupIndex() {
+            let availableIndices = [];
+            groups.forEach((g, idx) => {
+                if (g.length < 6) availableIndices.push(idx);
+            });
+
+            if (availableIndices.length === 0) return -1;
+            
+            const randomIndex = Math.floor(Math.random() * availableIndices.length);
+            return availableIndices[randomIndex];
+        }
+
+        // Core Draw Gacha Function
+        function drawGacha(silent = false) {
+            if (isSpinning) return;
+            if (pool.length === 0) {
+                showToast("Semua siswa sudah dimasukkan ke dalam kelompok!");
+                return;
+            }
+
+            const groupIndex = getAvailableGroupIndex();
+            if (groupIndex === -1) {
+                showToast("Semua kelompok sudah penuh!");
+                return;
+            }
+
+            isSpinning = true;
+            playSound('spin');
+            speakCharacterPhrase('spin');
+
+            const crankHandle = document.getElementById('crankHandle');
+            const globe = document.getElementById('gachaGlobe');
+            const chute = document.getElementById('chuteSlot');
+
+            crankHandle.classList.add('animate-crank');
+            globe.classList.add('animate-shake');
+
+            const randomPoolIndex = Math.floor(Math.random() * pool.length);
+            const selectedStudent = pool[randomPoolIndex];
+
+            setTimeout(() => {
+                pool.splice(randomPoolIndex, 1);
+                groups[groupIndex].push(selectedStudent);
+
+                playSound('pop');
+
+                const theme = groupColors[groupIndex];
+
+                chute.innerHTML = `
+                    <div class="w-12 h-12 rounded-full ${theme.bg} border-2 border-white shadow-lg flex items-center justify-center text-white cursor-pointer animate-drop" onclick="openModal('${selectedStudent}', ${groupIndex + 1})">
+                        <i class="fa-solid fa-gift text-lg"></i>
+                    </div>
+                `;
+
+                crankHandle.classList.remove('animate-crank');
+                globe.classList.remove('animate-shake');
+
+                renderGlobeBalls();
+                renderMasterList();
+                renderGroups();
+                updateStats();
+
+                isSpinning = false;
+
+                if (!silent && !isAutoLoop) {
+                    playSound('win');
+                    speakCharacterPhrase('win', selectedStudent, groupIndex + 1);
+                    openModal(selectedStudent, groupIndex + 1);
+                }
+            }, 800);
+        }
+
+        // Auto Draw All
+        async function autoGacha() {
+            if (isSpinning) return;
+            if (pool.length === 0) {
+                showToast("Semua siswa sudah diundi!");
+                return;
+            }
+
+            isAutoLoop = true;
+            document.getElementById('autoDrawBtn').disabled = true;
+            document.getElementById('singleDrawBtn').disabled = true;
+
+            while (pool.length > 0) {
+                drawGacha(true);
+                await new Promise(r => setTimeout(r, 250));
+            }
+
+            isAutoLoop = false;
+            document.getElementById('autoDrawBtn').disabled = false;
+            document.getElementById('singleDrawBtn').disabled = false;
+
+            playSound('win');
+            speakCharacterPhrase('win', 'Semua Siswa', 'Masing-Masing');
+            showToast("🎉 Semua kelompok berhasil diacak!");
+        }
+
+        // Custom Reset Modal Logic
+        function openResetModal() {
+            document.getElementById('resetConfirmModal').classList.remove('hidden');
+        }
+
+        function closeResetModal() {
+            document.getElementById('resetConfirmModal').classList.add('hidden');
+        }
+
+        function confirmResetGacha() {
+            closeResetModal();
+            isSpinning = false;
+            isAutoLoop = false;
+            init();
+            showToast("🔄 Gachapon berhasil di-reset ke kondisi awal!");
+        }
+
+        // Tab Switching
+        function switchTab(tab) {
+            const btnGroups = document.getElementById('tabGroups');
+            const btnStudents = document.getElementById('tabStudents');
+            const contentGroups = document.getElementById('contentGroups');
+            const contentStudents = document.getElementById('contentStudents');
+
+            if (tab === 'groups') {
+                contentGroups.classList.remove('hidden');
+                contentStudents.classList.add('hidden');
+                btnGroups.className = "py-2.5 px-6 font-fredoka text-lg border-b-2 border-cyan-400 text-cyan-300 transition";
+                btnStudents.className = "py-2.5 px-6 font-fredoka text-lg border-b-2 border-transparent text-slate-400 hover:text-white transition";
+            } else {
+                contentGroups.classList.add('hidden');
+                contentStudents.classList.remove('hidden');
+                btnStudents.className = "py-2.5 px-6 font-fredoka text-lg border-b-2 border-cyan-400 text-cyan-300 transition";
+                btnGroups.className = "py-2.5 px-6 font-fredoka text-lg border-b-2 border-transparent text-slate-400 hover:text-white transition";
+            }
+        }
+
+        // Modal Logic
+        function openModal(name, groupNum) {
+            const modal = document.getElementById('resultModal');
+            const theme = groupColors[groupNum - 1];
+
+            document.getElementById('modalStudentName').innerText = name;
+            document.getElementById('modalGroupTag').innerText = `MASUK KELOMPOK ${groupNum}`;
+            document.getElementById('modalGroupTag').className = `text-xs font-bold tracking-widest uppercase mb-1 ${theme.text}`;
+
+            const graphic = document.getElementById('modalCapsuleGraphic');
+            graphic.className = `w-24 h-24 mx-auto mb-4 rounded-full border-4 border-white flex items-center justify-center text-4xl shadow-xl ${theme.bg} text-white`;
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('resultModal').classList.add('hidden');
+        }
+
+        // Copy Results
+        function copyResults() {
+            let text = "=== HASIL PEMBAGIAN KELOMPOK GACHAPON ===\n\n";
+
+            groups.forEach((g, idx) => {
+                text += `📌 KELOMPOK ${idx + 1}:\n`;
+                if (g.length === 0) {
+                    text += "   (Belum ada anggota)\n";
+                } else {
+                    g.forEach((student, sIdx) => {
+                        text += `   ${sIdx + 1}. ${student}\n`;
+                    });
+                }
+                text += "\n";
+            });
+
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("📋 Hasil kelompok berhasil disalin!");
+            } catch (err) {
+                showToast("Gagal menyalin text.");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        // Show Toast
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        window.onload = function() {
+            init();
+        };
+    </script>
+</body>
+</html>
